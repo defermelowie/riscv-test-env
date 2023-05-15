@@ -180,6 +180,8 @@ trap_vector:                                                            \
         csrr t5, mcause;                                                \
         li t6, CAUSE_USER_ECALL;                                        \
         beq t5, t6, write_tohost;                                       \
+        li t6, CAUSE_VIRTUAL_SUPERVISOR_ECALL;                          \
+        beq t5, t6, write_tohost;                                       \
         li t6, CAUSE_SUPERVISOR_ECALL;                                  \
         beq t5, t6, write_tohost;                                       \
         li t6, CAUSE_MACHINE_ECALL;                                     \
