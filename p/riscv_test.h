@@ -168,6 +168,7 @@
 #define RVTEST_CODE_BEGIN                                               \
         .section .text.init;                                            \
         .align  6;                                                      \
+        .weak vstvec_handler;                                           \
         .weak stvec_handler;                                            \
         .weak mtvec_handler;                                            \
         .globl _start;                                                  \
@@ -222,9 +223,22 @@ reset_vector:                                                           \
                (1 << CAUSE_STORE_PAGE_FAULT) |                          \
                (1 << CAUSE_FETCH_PAGE_FAULT) |                          \
                (1 << CAUSE_MISALIGNED_FETCH) |                          \
+               (1 << CAUSE_VIRTUAL_SUPERVISOR_ECALL) |                  \
                (1 << CAUSE_USER_ECALL) |                                \
                (1 << CAUSE_BREAKPOINT);                                 \
         csrw medeleg, t0;                                               \
+        /* if an vstvec_handler is defined, delegate exceptions to it */\
+        la t0, stvec_handler;                                           \
+        beqz t0, 1f;                                                    \
+        csrw vstvec, t0;                                                \
+        li t0, (1 << CAUSE_LOAD_PAGE_FAULT) |                           \
+               (1 << CAUSE_STORE_PAGE_FAULT) |                          \
+               (1 << CAUSE_FETCH_PAGE_FAULT) |                          \
+               (1 << CAUSE_MISALIGNED_FETCH) |                          \
+               (1 << CAUSE_USER_ECALL) |                                \
+               (1 << CAUSE_BREAKPOINT);                                 \
+        csrs medeleg, t0;                                               \
+        csrw hedeleg, t0;                                               \
 1:      csrwi mstatus, 0;                                               \
         init;                                                           \
         EXTRA_INIT;                                                     \
