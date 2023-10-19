@@ -1,6 +1,8 @@
 #include "../encoding.h"
 #include "vmem_common.h"
 
+// TODO: Unify `setup_spt` and `setup_vspt` since they are the same except the use of C_SPA2GPA_* conversions
+
 /**
  * @brief Type for an 8-byte RV64 page table entry
  */

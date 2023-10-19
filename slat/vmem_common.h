@@ -1,4 +1,11 @@
+#ifndef RISCV_VMEM_H
+#define RISCV_VMEM_H
+
 #define G_STAGE_AT // Can be disabled for debugging
+
+//-----------------------------------------------------------------------------
+// Macro constants
+//-----------------------------------------------------------------------------
 
 #ifndef __riscv_xlen
 #define RISCV_PGSHIFT 12
@@ -11,6 +18,10 @@
 
 #define RISCV_L1_SPGSHIFT (RISCV_PGSHIFT + RISCV_PGLEVEL_BITS)
 #define RISCV_L2_SPGSHIFT (RISCV_L1_SPGSHIFT + RISCV_PGLEVEL_BITS)
+
+//-----------------------------------------------------------------------------
+// Helper macros
+//-----------------------------------------------------------------------------
 
 /**
  * @brief Convert a physical address to virtual address in C
@@ -40,6 +51,7 @@
 //-----------------------------------------------------------------------------
 // (V)S-stage address translation
 //-----------------------------------------------------------------------------
+
 #define ASM_PA2VA_UCODE(pa_reg) ASM_PA2VA(pa_reg, 0x0000, 0xfff)
 #define ASM_PA2VA_UDATA(pa_reg) ASM_PA2VA(pa_reg, 0x1000, 0xfff)
 #define ASM_PA2VA_SCODE(pa_reg) ASM_PA2VA(pa_reg, 0xfffffffffffff000, 0xfff)
@@ -53,6 +65,7 @@
 //-----------------------------------------------------------------------------
 // G-stage address translation
 //-----------------------------------------------------------------------------
+
 #ifdef G_STAGE_AT
 #define GPA_BASE 0x0
 #define ASM_SPA2GPA(spa_reg, base, mask) ASM_PA2VA(spa_reg, base, mask)
@@ -74,3 +87,27 @@
 #define C_SPA2GPA_HDATA(spa) C_SPA2GPA(spa, 0x2000, 0xfff)
 #define C_SPA2GPA_VDATA(spa) C_SPA2GPA(spa, 0x3000, 0xfff)
 #define C_SPA2GPA_SLAT(spa) C_SPA2GPA(spa, 0x200000, 0x1fffff)
+
+#endif
+
+//-----------------------------------------------------------------------------
+// Macros for modifying address translation structures
+//-----------------------------------------------------------------------------
+
+/**
+ * @brief Update page table entry (pte) bits
+ * @param pte_reg Register with pte address
+ * @param bits_reg Register with updated pte bits
+ * @details Clobbered registers:
+ * - `t0`
+ * - `t1`
+ * - `t2`
+ */
+#define ASM_UPDATE_PTE_BITS(pte_reg, bits_reg) \
+  li t0, 0x3ff;                                \
+  and t1, bits_reg, t0;                        \
+  not t0, t0;                                  \
+  ld t2, 0(pte_reg);                           \
+  and t2, t2, t0;                              \
+  or t0, t1, t2;                               \
+  sd t0, 0(pte_reg);
