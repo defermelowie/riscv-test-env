@@ -55,7 +55,6 @@
 //-----------------------------------------------------------------------------
 #ifdef G_STAGE_AT
 #define GPA_BASE 0x0
-#define SPA_CODE_BASE DRAM_BASE
 #define ASM_SPA2GPA(spa_reg, base, mask) ASM_PA2VA(spa_reg, base, mask)
 #define C_SPA2GPA(spa, base, mask) C_PA2VA(spa, base, mask)
 #else
