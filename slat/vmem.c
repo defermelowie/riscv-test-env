@@ -102,7 +102,7 @@ void setup_gpt(pte_t pt[3][PTECOUNT], unsigned long paddr_code_base, unsigned lo
 {
   pt[0][0] = ((pte_t)pt[1] >> RISCV_PGSHIFT << PTE_PPN_SHIFT) | PTE_V;
   pt[1][0] = ((pte_t)pt[2] >> RISCV_PGSHIFT << PTE_PPN_SHIFT) | PTE_V;
-  pt[1][1] = ((pte_t)paddr_slat_base >> RISCV_PGSHIFT << PTE_PPN_SHIFT) | PTE_V | PTE_R | PTE_W | PTE_X | PTE_U | PTE_D | PTE_A;
+  pt[1][1] = ((pte_t)paddr_slat_base >> RISCV_PGSHIFT << PTE_PPN_SHIFT) | PTE_V | PTE_R | PTE_W | 0x000 | PTE_U | PTE_D | PTE_A;
   pt[2][0] = ((pte_t)paddr_code_base >> RISCV_PGSHIFT << PTE_PPN_SHIFT) | PTE_V | PTE_R | 0x000 | PTE_X | PTE_U | PTE_D | PTE_A;
   pt[2][1] = ((pte_t)paddr_code_base >> RISCV_PGSHIFT << PTE_PPN_SHIFT) | PTE_V | PTE_R | 0x000 | PTE_X | 0x000 | PTE_D | PTE_A;
   pt[2][2] = ((pte_t)paddr_data_base >> RISCV_PGSHIFT << PTE_PPN_SHIFT) | PTE_V | PTE_R | PTE_W | 0x000 | 0x000 | PTE_D | PTE_A;
