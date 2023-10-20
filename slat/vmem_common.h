@@ -19,6 +19,18 @@
 #define RISCV_L1_SPGSHIFT (RISCV_PGSHIFT + RISCV_PGLEVEL_BITS)
 #define RISCV_L2_SPGSHIFT (RISCV_L1_SPGSHIFT + RISCV_PGLEVEL_BITS)
 
+#define PTE_BITS_UCODE (PTE_V | 0x000 | 0x000 | PTE_X | PTE_U | PTE_D | PTE_A)
+#define PTE_BITS_SCODE (PTE_V | 0x000 | 0x000 | PTE_X | 0x000 | PTE_D | PTE_A)
+#define PTE_BITS_UDATA (PTE_V | PTE_R | PTE_W | 0x000 | PTE_U | PTE_D | PTE_A)
+#define PTE_BITS_SDATA (PTE_V | PTE_R | PTE_W | 0x000 | 0x000 | PTE_D | PTE_A)
+#define PTE_BITS_PTR   (PTE_V | 0x000 | 0x000 | 0x000 | 0x000 | 0x000 | 0x000)
+
+#define PTE_BITS_SLAT  (PTE_V | PTE_R | PTE_W | 0x000 | PTE_U | PTE_D | PTE_A)
+#define PTE_BITS_VCODE PTE_BITS_UCODE
+#define PTE_BITS_HCODE PTE_BITS_SCODE
+#define PTE_BITS_VDATA PTE_BITS_UDATA
+#define PTE_BITS_HDATA PTE_BITS_SDATA
+
 //-----------------------------------------------------------------------------
 // Helper macros
 //-----------------------------------------------------------------------------
