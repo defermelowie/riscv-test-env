@@ -293,4 +293,58 @@ reset_vector:                                                           \
 
 #define RVTEST_DATA_END .align 4; .global end_signature; end_signature:
 
+//-----------------------------------------------------------------------
+// Macros to ease privilege level changes
+//-----------------------------------------------------------------------
+
+/**
+ * @brief `mret` into VU-mode
+ * @param dest Register with address to `mret` to
+ * @details Clobbered registers: `t0`
+ */
+#define RVTEST_MRET_VU(dest)        \
+  li t0, MSTATUS_MPP;               \
+  csrc mstatus, t0;                 \
+  li t0, MSTATUS_MPV;               \
+  csrs mstatus, t0;                 \
+  csrw mepc, dest;                  \
+  mret;
+
+/**
+ * @brief `mret` into U-mode
+ * @param dest Register with address to `mret` to
+ * @details Clobbered registers: `t0`
+ */
+#define RVTEST_MRET_U(dest)         \
+  li t0, MSTATUS_MPP | MSTATUS_MPV; \
+  csrc mstatus, t0;                 \
+  csrw mepc, dest;                  \
+  mret;
+
+/**
+ * @brief `mret` into VS-mode
+ * @param dest Register with address to `mret` to
+ * @details Clobbered registers: `t0`
+ */
+#define RVTEST_MRET_VS(dest)        \
+  li t0, MSTATUS_MPP;               \
+  csrc mstatus, t0;                 \
+  li t0, 0x800 | MSTATUS_MPV;       \
+  csrs mstatus, t0;                 \
+  csrw mepc, dest;                  \
+  mret;
+
+/**
+ * @brief `mret` into HS-mode
+ * @param dest Register with address to `mret` to
+ * @details Clobbered registers: `t0`
+ */
+#define RVTEST_MRET_HS(dest)        \
+  li t0, MSTATUS_MPP | MSTATUS_MPV; \
+  csrc mstatus, t0;                 \
+  li t0, 0x800;                     \
+  csrs mstatus, t0;                 \
+  csrw mepc, dest;                  \
+  mret;
+
 #endif
