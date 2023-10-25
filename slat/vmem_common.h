@@ -13,6 +13,13 @@
 #define RISCV_PGLEVEL_BITS 9
 #endif
 
+#define VMEM_SV39_LEVELS 3
+#define VMEM_SV48_LEVELS 4
+#define VMEM_SV57_LEVELS 5
+#define VMEM_SV39x4_LEVELS VMEM_SV39_LEVELS
+#define VMEM_SV48x4_LEVELS VMEM_SV48_LEVELS
+#define VMEM_SV57x4_LEVELS VMEM_SV57_LEVELS
+
 #define PTESIZE 8
 #define PTECOUNT (RISCV_PGSIZE / PTESIZE)
 
@@ -130,3 +137,15 @@
   and t2, t2, t0;                              \
   or t0, t1, t2;                               \
   sd t0, 0(pte_reg);
+
+// (V)S-stage PTE handles for tests /* FIXME: Is only correct for SV39 */
+#define UCODE_LEAF_PTE spt + (2*RISCV_PGSIZE) + (0*PTESIZE) /* user code leaf pte */
+#define UDATA_LEAF_PTE spt + (2*RISCV_PGSIZE) + (1*PTESIZE) /* user data leaf pte */
+#define SDATA_LEAF_PTE spt + (4*RISCV_PGSIZE) + (RISCV_PGSIZE - (2*PTESIZE)) /* supervisor data leaf pte */
+#define SCODE_LEAF_PTE spt + (4*RISCV_PGSIZE) + (RISCV_PGSIZE - (1*PTESIZE)) /* supervisor code leaf pte */
+
+// G-stage PTE handles for tests /* FIXME: Is only correct for SV39x4 */
+#define PTR_PTE        gpt + (1*RISCV_PGSIZE) + (0*PTESIZE) /* pointer pte */ /* TODO: Rename to make clear this is G-stage*/
+#define SLAT_LEAF_PTE  gpt + (1*RISCV_PGSIZE) + (1*PTESIZE) /* S-stage at structure leaf pte */
+#define VCODE_LEAF_PTE gpt + (2*RISCV_PGSIZE) + (0*PTESIZE) /* user/supervisor code leaf pte */
+#define VDATA_LEAF_PTE gpt + (2*RISCV_PGSIZE) + (3*PTESIZE) /* user/supervisor data leaf pte */
