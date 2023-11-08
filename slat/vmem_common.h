@@ -106,6 +106,8 @@
 #define SPA2GPA_HCODE(spa_reg) SPA2GPA(spa_reg, 0x1000, 0xfff)
 #define SPA2GPA_HDATA(spa_reg) SPA2GPA(spa_reg, 0x2000, 0xfff)
 #define SPA2GPA_VDATA(spa_reg) SPA2GPA(spa_reg, 0x3000, 0xfff)
+#define SPA2GPA_UCODE(spa_reg) SPA2GPA(spa_reg, 0x4000, 0xfff)
+#define SPA2GPA_UDATA(spa_reg) SPA2GPA(spa_reg, 0x5000, 0xfff)
 #define SPA2GPA_SLAT(spa_reg)  SPA2GPA(spa_reg, 0x200000, 0x1fffff)
 
 #define C_SPA2GPA_VCODE(spa) C_SPA2GPA(spa, 0x0000, 0xfff)

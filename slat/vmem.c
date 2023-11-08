@@ -87,11 +87,13 @@ void setup_vspt(pte_t pt[9][PTECOUNT], unsigned long paddr_base, unsigned int le
  * @brief Simplified setup of G-stage page table
  *
  * @details Sets up a page table where:
- * - `0x000_0000_0000_0xxx` --> `paddr_code_base` (user/supervisor code page)
+ * - `0x000_0000_0000_0xxx` --> `paddr_code_base` (virtual user/supervisor code page)
  * - `0x000_0000_0000_1xxx` --> `paddr_code_base` (hypervisor code page)
  * - `0x000_0000_0000_2xxx` --> `paddr_data_base` (hypervisor data page)
- * - `0x000_0000_0000_3xxx` --> `paddr_data_base` (user/supervisor data page)
- * - `0x000_0000_002x_xxxx` --> `paddr_slat_base` (user/supervisor data superpage for SLAT structures)
+ * - `0x000_0000_0000_3xxx` --> `paddr_data_base` (virtual user/supervisor data page)
+ * - `0x000_0000_0000_4xxx` --> `paddr_code_base` (user code page)
+ * - `0x000_0000_0000_5xxx` --> `paddr_data_base` (user data page)
+ * - `0x000_0000_002x_xxxx` --> `paddr_slat_base` (virtual user/supervisor data superpage for SLAT structures)
  *
  * @param pt Page table base address
  * @param paddr_code_base Supervisor physical base address of code
@@ -107,4 +109,6 @@ void setup_gpt(pte_t pt[3][PTECOUNT], unsigned long paddr_code_base, unsigned lo
   pt[2][1] = ((pte_t)paddr_code_base >> RISCV_PGSHIFT << PTE_PPN_SHIFT) | PTE_BITS_HCODE;
   pt[2][2] = ((pte_t)paddr_data_base >> RISCV_PGSHIFT << PTE_PPN_SHIFT) | PTE_BITS_HDATA;
   pt[2][3] = ((pte_t)paddr_data_base >> RISCV_PGSHIFT << PTE_PPN_SHIFT) | PTE_BITS_VDATA;
+  pt[2][4] = ((pte_t)paddr_code_base >> RISCV_PGSHIFT << PTE_PPN_SHIFT) | PTE_BITS_UCODE;
+  pt[2][5] = ((pte_t)paddr_data_base >> RISCV_PGSHIFT << PTE_PPN_SHIFT) | PTE_BITS_UDATA;
 }
