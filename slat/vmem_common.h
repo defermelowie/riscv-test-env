@@ -143,4 +143,6 @@
 #define PTR_PTE        gpt + (1*RISCV_PGSIZE) + (0*PTESIZE) /* pointer pte */ /* TODO: Rename to make clear this is G-stage*/
 #define SLAT_LEAF_PTE  gpt + (1*RISCV_PGSIZE) + (1*PTESIZE) /* S-stage at structure leaf pte */
 #define VCODE_LEAF_PTE gpt + (2*RISCV_PGSIZE) + (0*PTESIZE) /* user/supervisor code leaf pte */
+#define HCODE_LEAF_PTE gpt + (2*RISCV_PGSIZE) + (1*PTESIZE) /* hypervisor code leaf pte */
+#define HDATA_LEAF_PTE gpt + (2*RISCV_PGSIZE) + (2*PTESIZE) /* hypervisor data leaf pte */
 #define VDATA_LEAF_PTE gpt + (2*RISCV_PGSIZE) + (3*PTESIZE) /* user/supervisor data leaf pte */
