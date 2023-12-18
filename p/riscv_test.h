@@ -347,4 +347,52 @@ reset_vector:                                                           \
   csrw mepc, dest;                  \
   mret;
 
+/**
+ * @brief `sret` into VS-mode
+ * @param dest Register with address to `sret` to
+ * @details Clobbered registers: `t0`
+ */
+#define RVTEST_SRET_VS(dest)        \
+  li t0, SSTATUS_SPP;               \
+  csrs sstatus, t0;                 \
+  li t0, HSTATUS_SPV;               \
+  csrs hstatus, t0;                 \
+  csrw sepc, dest;                  \
+  sret;
+
+/**
+ * @brief `sret` into VU-mode
+ * @param dest Register with address to `sret` to
+ * @details Clobbered registers: `t0`
+ */
+#define RVTEST_SRET_VU(dest)        \
+  li t0, SSTATUS_SPP;               \
+  csrc sstatus, t0;                 \
+  li t0, HSTATUS_SPV;               \
+  csrs hstatus, t0;                 \
+  csrw sepc, dest;                  \
+  sret;
+
+/**
+ * @brief `sret` into xS-mode (without changing V)
+ * @param dest Register with address to `sret` to
+ * @details Clobbered registers: `t0`
+ */
+#define RVTEST_SRET_S(dest)         \
+  li t0, SSTATUS_SPP;               \
+  csrs sstatus, t0;                 \
+  csrw sepc, dest;                  \
+  sret;
+
+/**
+ * @brief `sret` into xU-mode (without changing V)
+ * @param dest Register with address to `sret` to
+ * @details Clobbered registers: `t0`
+ */
+#define RVTEST_SRET_U(dest)         \
+  li t0, SSTATUS_SPP;               \
+  csrc sstatus, t0;                 \
+  csrw sepc, dest;                  \
+  sret;
+
 #endif
