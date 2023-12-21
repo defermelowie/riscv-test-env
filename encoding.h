@@ -3249,6 +3249,22 @@
 #define CAUSE_LOAD_GUEST_PAGE_FAULT 0x15
 #define CAUSE_VIRTUAL_INSTRUCTION 0x16
 #define CAUSE_STORE_GUEST_PAGE_FAULT 0x17
+#define CAUSE_USER_SOFTWARE_I (IRQ_U_SOFT | (1 << (__riscv_xlen - 1)))
+#define CAUSE_SUPERVISOR_SOFTWARE_I (IRQ_S_SOFT | (1 << (__riscv_xlen - 1)))
+#define CAUSE_VIRTUAL_SUPERVISOR_SOFTWARE_I (IRQ_VS_SOFT | (1 << (__riscv_xlen - 1)))
+#define CAUSE_MACHINE_SOFTWARE_I (IRQ_M_SOFT | (1 << (__riscv_xlen - 1)))
+#define CAUSE_USER_TIMER_I (IRQ_U_TIMER | (1 << (__riscv_xlen - 1)))
+#define CAUSE_SUPERVISOR_TIMER_I (IRQ_S_TIMER | (1 << (__riscv_xlen - 1)))
+#define CAUSE_VIRTUAL_SUPERVISOR_TIMER_I (IRQ_VS_TIMER | (1 << (__riscv_xlen - 1)))
+#define CAUSE_MACHINE_TIMER_I (IRQ_M_TIMER | (1 << (__riscv_xlen - 1)))
+#define CAUSE_USER_EXTERNAL_I (IRQ_U_EXT | (1 << (__riscv_xlen - 1)))
+#define CAUSE_SUPERVISOR_EXTERNAL_I (IRQ_S_EXT | (1 << (__riscv_xlen - 1)))
+#define CAUSE_VIRTUAL_SUPERVISOR_EXTERNAL_I (IRQ_VS_EXT | (1 << (__riscv_xlen - 1)))
+#define CAUSE_MACHINE_EXTERNAL_I (IRQ_M_EXT | (1 << (__riscv_xlen - 1)))
+#define CAUSE_SUPERVISOR_GUEST_EXTERNAL_I (IRQ_S_GEXT | (1 << (__riscv_xlen - 1)))
+#define CAUSE_COP_I (IRQ_COP | (1 << (__riscv_xlen - 1)))
+#define CAUSE_LOCAL_COUNT_OVERFLOW_I (IRQ_LCOF | (1 << (__riscv_xlen - 1)))
+
 
 #define INSN_FIELD_RD 0xf80
 #define INSN_FIELD_RT 0xf8000
