@@ -228,7 +228,7 @@ reset_vector:                                                           \
                (1 << CAUSE_BREAKPOINT);                                 \
         csrw medeleg, t0;                                               \
         /* if an vstvec_handler is defined, delegate exceptions to it */\
-        la t0, stvec_handler;                                           \
+      1:la t0, vstvec_handler;                                          \
         beqz t0, 1f;                                                    \
         csrw vstvec, t0;                                                \
         li t0, (1 << CAUSE_LOAD_PAGE_FAULT) |                           \
