@@ -175,7 +175,7 @@
 #define INTERRUPT_HANDLER j other_exception /* No interrupts should occur */
 
 #define RVTEST_CODE_BEGIN                                                      \
-  .section.text.init;                                                          \
+  .section .text.init;                                                         \
   .align 6;                                                                    \
   .weak vstvec_handler;                                                        \
   .weak stvec_handler;                                                         \
@@ -286,7 +286,8 @@
 #define EXTRA_DATA
 
 #define RVTEST_DATA_BEGIN                                                      \
-  EXTRA_DATA.pushsection.tohost, "aw", @progbits;                              \
+  EXTRA_DATA                                                                   \
+  .pushsection .tohost, "aw", @progbits;                                       \
   .align 6;                                                                    \
   .global tohost;                                                              \
   tohost:                                                                      \
@@ -311,11 +312,149 @@
 // Pass and fail code (assumes test num is in TESTNUM)
 //-----------------------------------------------------------------------
 
-#define RVTEST_PASSFAIL                                                          \
+#define RVTEST_PASSFAIL                                                        \
   bne x0, TESTNUM, pass;                                                       \
   fail:                                                                        \
   RVTEST_FAIL;                                                                 \
   pass:                                                                        \
   RVTEST_PASS
+
+//-----------------------------------------------------------------------
+// Macros to ease nop insertion
+//-----------------------------------------------------------------------
+
+#define RVTEST_INSERT_NOPS_0
+#define RVTEST_INSERT_NOPS_1                                                   \
+  nop;                                                                         \
+  RVTEST_INSERT_NOPS_0
+#define RVTEST_INSERT_NOPS_2                                                   \
+  nop;                                                                         \
+  RVTEST_INSERT_NOPS_1
+#define RVTEST_INSERT_NOPS_3                                                   \
+  nop;                                                                         \
+  RVTEST_INSERT_NOPS_2
+#define RVTEST_INSERT_NOPS_4                                                   \
+  nop;                                                                         \
+  RVTEST_INSERT_NOPS_3
+#define RVTEST_INSERT_NOPS_5                                                   \
+  nop;                                                                         \
+  RVTEST_INSERT_NOPS_4
+#define RVTEST_INSERT_NOPS_6                                                   \
+  nop;                                                                         \
+  RVTEST_INSERT_NOPS_5
+#define RVTEST_INSERT_NOPS_7                                                   \
+  nop;                                                                         \
+  RVTEST_INSERT_NOPS_6
+#define RVTEST_INSERT_NOPS_8                                                   \
+  nop;                                                                         \
+  RVTEST_INSERT_NOPS_7
+#define RVTEST_INSERT_NOPS_9                                                   \
+  nop;                                                                         \
+  RVTEST_INSERT_NOPS_8
+#define RVTEST_INSERT_NOPS_10                                                  \
+  nop;                                                                         \
+  RVTEST_INSERT_NOPS_9
+
+//-----------------------------------------------------------------------
+// Macros to ease privilege level changes
+//-----------------------------------------------------------------------
+
+/**
+ * @brief `mret` into VU-mode
+ * @param dest Register with address to `mret` to
+ * @details Clobbered registers: `t0`
+ */
+#define RVTEST_MRET_VU(dest)                                                   \
+  li t0, MSTATUS_MPP;                                                          \
+  csrc mstatus, t0;                                                            \
+  li t0, MSTATUS_MPV;                                                          \
+  csrs mstatus, t0;                                                            \
+  csrw mepc, dest;                                                             \
+  mret;
+
+/**
+ * @brief `mret` into U-mode
+ * @param dest Register with address to `mret` to
+ * @details Clobbered registers: `t0`
+ */
+#define RVTEST_MRET_U(dest)                                                    \
+  li t0, MSTATUS_MPP | MSTATUS_MPV;                                            \
+  csrc mstatus, t0;                                                            \
+  csrw mepc, dest;                                                             \
+  mret;
+
+/**
+ * @brief `mret` into VS-mode
+ * @param dest Register with address to `mret` to
+ * @details Clobbered registers: `t0`
+ */
+#define RVTEST_MRET_VS(dest)                                                   \
+  li t0, MSTATUS_MPP;                                                          \
+  csrc mstatus, t0;                                                            \
+  li t0, 0x800 | MSTATUS_MPV;                                                  \
+  csrs mstatus, t0;                                                            \
+  csrw mepc, dest;                                                             \
+  mret;
+
+/**
+ * @brief `mret` into HS-mode
+ * @param dest Register with address to `mret` to
+ * @details Clobbered registers: `t0`
+ */
+#define RVTEST_MRET_HS(dest)                                                   \
+  li t0, MSTATUS_MPP | MSTATUS_MPV;                                            \
+  csrc mstatus, t0;                                                            \
+  li t0, 0x800;                                                                \
+  csrs mstatus, t0;                                                            \
+  csrw mepc, dest;                                                             \
+  mret;
+
+/**
+ * @brief `sret` into VS-mode
+ * @param dest Register with address to `sret` to
+ * @details Clobbered registers: `t0`
+ */
+#define RVTEST_SRET_VS(dest)                                                   \
+  li t0, SSTATUS_SPP;                                                          \
+  csrs sstatus, t0;                                                            \
+  li t0, HSTATUS_SPV;                                                          \
+  csrs hstatus, t0;                                                            \
+  csrw sepc, dest;                                                             \
+  sret;
+
+/**
+ * @brief `sret` into VU-mode
+ * @param dest Register with address to `sret` to
+ * @details Clobbered registers: `t0`
+ */
+#define RVTEST_SRET_VU(dest)                                                   \
+  li t0, SSTATUS_SPP;                                                          \
+  csrc sstatus, t0;                                                            \
+  li t0, HSTATUS_SPV;                                                          \
+  csrs hstatus, t0;                                                            \
+  csrw sepc, dest;                                                             \
+  sret;
+
+/**
+ * @brief `sret` into xS-mode (without changing V)
+ * @param dest Register with address to `sret` to
+ * @details Clobbered registers: `t0`
+ */
+#define RVTEST_SRET_S(dest)                                                    \
+  li t0, SSTATUS_SPP;                                                          \
+  csrs sstatus, t0;                                                            \
+  csrw sepc, dest;                                                             \
+  sret;
+
+/**
+ * @brief `sret` into xU-mode (without changing V)
+ * @param dest Register with address to `sret` to
+ * @details Clobbered registers: `t0`
+ */
+#define RVTEST_SRET_U(dest)                                                    \
+  li t0, SSTATUS_SPP;                                                          \
+  csrc sstatus, t0;                                                            \
+  csrw sepc, dest;                                                             \
+  sret;
 
 #endif
