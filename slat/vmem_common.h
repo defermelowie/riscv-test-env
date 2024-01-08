@@ -7,7 +7,7 @@
 // Macro constants for virtual memory
 //-----------------------------------------------------------------------------
 
-#ifndef __riscv_xlen
+#ifndef RISCV_PGSHIFT
 #define RISCV_PGSHIFT 12
 #define RISCV_PGSIZE (0x1 << RISCV_PGSHIFT)
 #define RISCV_PGLEVEL_BITS 9
