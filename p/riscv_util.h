@@ -166,20 +166,38 @@
 //-----------------------------------------------------------------------------
 // Convenience routines for interrupt setup
 //-----------------------------------------------------------------------------
-#ifndef __INT_MACRO
-#define __INT_MACRO
+
+#ifndef __CLINT_MACRO
+#define __CLINT_MACRO
+
+#define CLINT_MSIP0 CLINT_BASE | 0x0000
+#define CLINT_MTIMECMP0 CLINT_BASE | 0x4000
+#define CLINT_MTIME0 CLINT_BASE | 0xbff8
 
 #define GET_MTIME(rreg)                                                        \
-  li rreg, CLINT_BASE | 0xbff8;                                                \
+  li rreg, CLINT_MTIME0;                                                       \
   ld rreg, 0(rreg)
 
 #define SET_MTIME(areg)                                                        \
-  li t0, CLINT_BASE | 0xbff8;                                                  \
+  li t0, CLINT_MTIME0;                                                         \
   sd areg, 0(t0)
 
 #define SET_MTIMECMP(areg)                                                     \
-  li t0, CLINT_BASE | 0x4000;                                                  \
+  li t0, CLINT_MTIMECMP0;                                                      \
   sd areg, 0(t0)
+
+#define GET_MSIP(rreg)                                                         \
+  li rreg, CLINT_MSIP0;                                                        \
+  lw rreg, 0(rreg)
+
+#define SET_MSIP(areg)                                                         \
+  li t0, CLINT_MSIP0;                                                          \
+  sw areg, 0(t0)
+
+#endif
+
+#ifndef __INT_MACRO
+#define __INT_MACRO
 
 /**
  * @brief Let a machine-timer-interrupt cause a supervisor-timer-interrupt
@@ -208,6 +226,38 @@
   csrc mie, t0; /* Disable M timer interrupts */                               \
   li t0, MIP_VSTIP;                                                            \
   csrs hvip, t0; /* Set VS timer interrupt pending */                          \
+  mret;                                                                        \
+  nop;                                                                         \
+  skip:
+
+/**
+ * @brief Let a machine-software-interrupt cause a
+ * supervisor-software-interrupt
+ * @param cause GPR holding the trap cause
+ */
+#define PROMOTE_MSI_TO_SSI(cause)                                              \
+  li t0, CAUSE_MACHINE_SOFTWARE_I;                                             \
+  bne cause, t0, skip;                                                         \
+  li t0, MIP_MSIP;                                                             \
+  csrc mie, t0; /* Disable M software interrupts */                            \
+  li t0, MIP_SSIP;                                                             \
+  csrs mip, t0; /* Set S software interrupt pending */                         \
+  mret;                                                                        \
+  nop;                                                                         \
+  skip:
+
+/**
+ * @brief Let a machine-software-interrupt cause a
+ * virtual-supervisor-software-interrupt
+ * @param cause GPR holding the trap cause
+ */
+#define PROMOTE_MSI_TO_VSSI(cause)                                             \
+  li t0, CAUSE_MACHINE_SOFTWARE_I;                                             \
+  bne cause, t0, skip;                                                         \
+  li t0, MIP_MSIP;                                                             \
+  csrc mie, t0; /* Disable M software interrupts */                            \
+  li t0, MIP_VSSIP;                                                            \
+  csrs hvip, t0; /* Set VS software interrupt pending */                       \
   mret;                                                                        \
   nop;                                                                         \
   skip:
